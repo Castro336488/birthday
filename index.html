@@ -7,11 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 <style>
   :root{
     --bg-deep:#160a1f;
-    --bg-mid:#2c1035;
     --bg-glow1:#5b2a63;
     --bg-glow2:#7a3352;
     --rose:#f28aa0;
@@ -30,18 +28,19 @@
     background:var(--bg-deep);
     color:var(--cream);
     font-family:'Jost', sans-serif;
-    overflow:hidden;
   }
 
   .screen{
     position:fixed;
     inset:0;
     display:flex;
-    align-items:center;
     justify-content:center;
     text-align:center;
     padding:8vh 8vw;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
   }
+  .screen .inner{ margin:auto; padding:3vh 0; }
 
   /* ---------- aurora background blobs ---------- */
   .aurora{
@@ -49,6 +48,7 @@
     z-index:0;
     filter:blur(60px);
     opacity:.55;
+    pointer-events:none;
   }
   .aurora span{
     position:absolute;
@@ -117,9 +117,7 @@
     color:#e9bcc2;
     margin-top:.15em;
   }
-  .heart{
-    color:#c23b4b;
-  }
+  .heart{ color:#c23b4b; }
 
   .sub{
     margin-top:2rem;
@@ -152,16 +150,38 @@
   }
   .btn:active{ transform:translateY(0); }
 
-  /* ================= PAGE 2 ================= */
-  #page2{
+  .btn-glow{
+    margin-top:2.6rem;
+    display:inline-flex;
+    align-items:center;
+    gap:.6rem;
+    padding:.9rem 2rem;
+    border-radius:999px;
+    background:linear-gradient(var(--bg-deep), var(--bg-deep)) padding-box,
+               linear-gradient(120deg, var(--rose), var(--gold), var(--lavender)) border-box;
+    border:1px solid transparent;
+    color:var(--cream);
+    font-family:'Jost', sans-serif;
+    font-size:.74rem;
+    letter-spacing:.2em;
+    cursor:pointer;
+    transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .btn-glow:hover{
+    transform:translateY(-1px);
+    box-shadow:0 0 24px rgba(242,138,160,.25);
+  }
+
+  /* ================= PAGE 2 & 3 (letter pages) ================= */
+  .letter-page{
     z-index:1;
     opacity:0;
     pointer-events:none;
-    transition:opacity 1.4s ease;
+    transition:opacity 1.2s ease;
   }
-  #page2.active{ opacity:1; pointer-events:auto; z-index:3; }
+  .letter-page.active{ opacity:1; pointer-events:auto; z-index:3; }
 
-  #page2 .inner{ max-width:620px; position:relative; z-index:1; }
+  .letter-page .inner{ max-width:620px; position:relative; z-index:1; }
 
   .letter-label{
     font-size:.7rem;
@@ -189,10 +209,11 @@
   .message{
     font-family:'Cormorant Garamond', serif;
     font-weight:500;
-    font-size:clamp(1.15rem, 3vw, 1.5rem);
+    font-size:clamp(1.1rem, 3vw, 1.45rem);
     line-height:1.85;
     color:var(--cream);
     white-space:pre-line;
+    text-align:left;
   }
 
   .signature{
@@ -211,6 +232,11 @@
     width:44px; height:1px;
     margin:1.6rem auto;
     background:linear-gradient(90deg, var(--rose), var(--gold), var(--lavender));
+  }
+
+  .final-heart{
+    margin-top:2.4rem;
+    font-size:2.6rem;
   }
 
   /* sound toggle */
@@ -232,7 +258,7 @@
   .sound-toggle.show{ opacity:1; }
   .sound-toggle svg{ width:18px; height:18px; }
 
-  /* ---------- petals ---------- */
+  /* ---------- flowers ---------- */
   #petals{
     position:fixed; inset:0;
     pointer-events:none;
@@ -242,9 +268,7 @@
   .petal{
     position:absolute;
     top:-8%;
-    width:14px; height:18px;
-    border-radius:0 60% 0 60%;
-    opacity:.85;
+    line-height:1;
     animation-name:fall, sway;
     animation-timing-function:linear, ease-in-out;
     animation-iteration-count:infinite, infinite;
@@ -260,11 +284,15 @@
   @media (prefers-reduced-motion:reduce){
     .petal{ animation:none; display:none; }
     .aurora span{ animation:none; }
-    #page1, #page2{ transition:none; }
+    #page1, .letter-page{ transition:none; }
   }
 </style>
 </head>
 <body>
+
+<audio id="bgMusic" loop preload="auto">
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
 
 <div class="aurora"><span></span><span></span><span></span></div>
 <div class="grain"></div>
@@ -287,7 +315,7 @@
   </div>
 </section>
 
-<section id="page2" class="screen">
+<section id="page2" class="screen letter-page">
   <div class="inner">
     <div class="letter-label">HAPPY BIRTHDAY</div>
     <div class="to">Dear Constance,</div>
@@ -298,116 +326,81 @@ I hope today feels the way you make everyone around you feel: seen, celebrated, 
 May this new year bring you soft mornings, easy laughter, and every good thing you've been quietly hoping for.
 
 Thank you for being exactly who you are.</p>
+    <div style="text-align:center;">
+      <button class="btn-glow" id="continueBtn">KEEP READING &#8594;</button>
+    </div>
+  </div>
+</section>
+
+<section id="page3" class="screen letter-page">
+  <div class="inner">
+    <div class="letter-label">A FEW MORE THINGS</div>
+    <p class="message">I don't say this enough, so let me say it properly today.
+
+You have this way of making ordinary moments feel warmer just by being in them. The people around you feel it too — I've watched it happen.
+
+I'm grateful for the version of you I get to know, and even more excited for the one you're still becoming.
+
+So today, let yourself be celebrated. Let yourself be spoiled a little. You've earned every bit of it.</p>
     <div class="divider"></div>
     <div class="signature">With all my love, Gboyega</div>
+    <div class="final-heart">&#127801;</div>
   </div>
 </section>
 
 <script>
 (function(){
-  // ---------- colorful petals ----------
+  // ---------- flowers ----------
   const petalContainer = document.getElementById('petals');
-  const PETAL_COUNT = 22;
-  const colors = [
-    ['#f28aa0','#fbc7d1'], // rose
-    ['#f6b785','#fde0bd'], // peach
-    ['#c9a6f0','#e6d4fb'], // lavender
-    ['#f0c96b','#fbe6ad'], // gold
-    ['#8fd6c4','#c9f0e6']  // mint
-  ];
+  const PETAL_COUNT = 20;
+  const flowers = ['\uD83C\uDF38','\uD83C\uDF3A','\uD83C\uDF37','\uD83C\uDF3C','\uD83D\uDCAE'];
   for(let i=0;i<PETAL_COUNT;i++){
     const p = document.createElement('div');
     p.className = 'petal';
+    p.textContent = flowers[Math.floor(Math.random()*flowers.length)];
     const left = Math.random()*100;
-    const fallDur = 9 + Math.random()*8;
+    const fallDur = 10 + Math.random()*9;
     const swayDur = 3 + Math.random()*3;
-    const delay = Math.random()*-15;
-    const size = 10 + Math.random()*10;
-    const [c1,c2] = colors[Math.floor(Math.random()*colors.length)];
+    const delay = Math.random()*-16;
+    const size = 16 + Math.random()*12;
     p.style.left = left + 'vw';
-    p.style.width = size + 'px';
-    p.style.height = (size*1.3) + 'px';
-    p.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 60%, transparent 100%)`;
+    p.style.fontSize = size + 'px';
     p.style.animationDuration = fallDur + 's, ' + swayDur + 's';
     p.style.animationDelay = delay + 's, ' + delay + 's';
-    p.style.opacity = (0.5 + Math.random()*0.4).toFixed(2);
+    p.style.opacity = (0.55 + Math.random()*0.4).toFixed(2);
     petalContainer.appendChild(p);
   }
 
-  // ---------- page transition ----------
+  // ---------- navigation ----------
   const page1 = document.getElementById('page1');
   const page2 = document.getElementById('page2');
+  const page3 = document.getElementById('page3');
   const openBtn = document.getElementById('openBtn');
+  const continueBtn = document.getElementById('continueBtn');
   const soundToggle = document.getElementById('soundToggle');
+  const bgMusic = document.getElementById('bgMusic');
 
-  let musicStarted = false;
   let musicPlaying = false;
-  let pad, melody, loop;
-
-  function buildMusic(){
-    const reverb = new Tone.Reverb({ decay:6, wet:.45 }).toDestination();
-    const filter = new Tone.Filter(1400, 'lowpass').connect(reverb);
-
-    pad = new Tone.PolySynth(Tone.Synth, {
-      oscillator:{ type:'sine' },
-      envelope:{ attack:1.8, decay:1, sustain:.7, release:4 },
-      volume:-16
-    }).connect(filter);
-
-    melody = new Tone.Synth({
-      oscillator:{ type:'triangle' },
-      envelope:{ attack:.4, decay:.6, sustain:.3, release:2 },
-      volume:-20
-    }).connect(filter);
-
-    const chords = [
-      ['C4','E4','G4','B4'],
-      ['A3','C4','E4','G4'],
-      ['F3','A3','C4','E4'],
-      ['G3','B3','D4','F4']
-    ];
-    const notes = ['E5','G5','C6','B5','A5','G5','E5','D5'];
-
-    let chordIdx = 0, noteIdx = 0;
-
-    loop = new Tone.Loop((time)=>{
-      pad.triggerAttackRelease(chords[chordIdx % chords.length], '2m', time);
-      chordIdx++;
-    }, '2m');
-
-    const noteLoop = new Tone.Loop((time)=>{
-      if(Math.random() > .35){
-        melody.triggerAttackRelease(notes[noteIdx % notes.length], '4n', time);
-      }
-      noteIdx++;
-    }, '1m');
-
-    Tone.Transport.bpm.value = 62;
-    loop.start(0);
-    noteLoop.start('1m');
-  }
 
   async function startMusic(){
-    if(musicStarted) return;
-    musicStarted = true;
-    await Tone.start();
-    buildMusic();
-    Tone.Transport.start();
-    musicPlaying = true;
-    soundToggle.classList.add('show');
-    updateIcon();
+    try{
+      await bgMusic.play();
+      musicPlaying = true;
+      soundToggle.classList.add('show');
+      updateIcon();
+    }catch(e){
+      soundToggle.classList.add('show');
+    }
   }
 
   function toggleMusic(){
-    if(!musicStarted) return;
     if(musicPlaying){
-      Tone.Transport.pause();
+      bgMusic.pause();
       musicPlaying = false;
+      updateIcon();
     } else {
-      Tone.Transport.start();
-      musicPlaying = true;
+      bgMusic.play().then(()=>{ musicPlaying = true; updateIcon(); }).catch(()=>{});
     }
-    updateIcon();
   }
 
   function updateIcon(){
@@ -421,6 +414,12 @@ Thank you for being exactly who you are.</p>
     page1.style.filter = 'blur(6px)';
     setTimeout(()=>{ page1.style.pointerEvents = 'none'; }, 600);
     page2.classList.add('active');
+  });
+
+  continueBtn.addEventListener('click', ()=>{
+    page2.classList.remove('active');
+    page3.classList.add('active');
+    window.scrollTo(0,0);
   });
 
   soundToggle.addEventListener('click', toggleMusic);
