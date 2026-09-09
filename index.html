@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Constance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<style>
+  :root{
+    --bg-deep:#160a1f;
+    --bg-mid:#2c1035;
+    --bg-glow1:#5b2a63;
+    --bg-glow2:#7a3352;
+    --rose:#f28aa0;
+    --peach:#f6b785;
+    --lavender:#c9a6f0;
+    --gold:#f0c96b;
+    --mint:#8fd6c4;
+    --cream:#fbf3ee;
+    --muted:#c9b6c9;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    height:100%;
+    background:var(--bg-deep);
+    color:var(--cream);
+    font-family:'Jost', sans-serif;
+    overflow:hidden;
+  }
+
+  .screen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:8vh 8vw;
+  }
+
+  /* ---------- aurora background blobs ---------- */
+  .aurora{
+    position:fixed; inset:-10%;
+    z-index:0;
+    filter:blur(60px);
+    opacity:.55;
+  }
+  .aurora span{
+    position:absolute;
+    border-radius:50%;
+    mix-blend-mode:screen;
+    animation:drift 26s ease-in-out infinite;
+  }
+  .aurora span:nth-child(1){
+    width:42vw; height:42vw; top:-10%; left:-8%;
+    background:radial-gradient(circle, var(--bg-glow2), transparent 70%);
+    animation-delay:0s;
+  }
+  .aurora span:nth-child(2){
+    width:38vw; height:38vw; bottom:-12%; right:-10%;
+    background:radial-gradient(circle, var(--lavender), transparent 70%);
+    opacity:.5;
+    animation-delay:-8s;
+  }
+  .aurora span:nth-child(3){
+    width:30vw; height:30vw; top:35%; left:55%;
+    background:radial-gradient(circle, var(--gold), transparent 70%);
+    opacity:.35;
+    animation-delay:-16s;
+  }
+  @keyframes drift{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    50%{ transform:translate(4%, 3%) scale(1.08); }
+  }
+
+  .grain{
+    position:fixed; inset:0;
+    pointer-events:none;
+    opacity:.35;
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+    z-index:5;
+  }
+
+  /* ================= PAGE 1 ================= */
+  #page1{
+    z-index:2;
+    background:radial-gradient(ellipse at 50% 30%, #100a12 0%, #050308 65%);
+    transition:opacity 1.1s ease, filter 1.1s ease;
+  }
+  #page1 .inner{ max-width:560px; position:relative; z-index:1; }
+
+  .eyebrow{
+    font-size:.72rem;
+    letter-spacing:.32em;
+    color:var(--muted);
+    font-weight:400;
+    margin-bottom:2.2rem;
+  }
+
+  .headline{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    line-height:1.05;
+    font-size:clamp(2.6rem, 8vw, 4.4rem);
+    color:var(--cream);
+  }
+  .headline .by{
+    display:block;
+    font-style:italic;
+    font-weight:500;
+    color:#e9bcc2;
+    margin-top:.15em;
+  }
+  .heart{
+    color:#c23b4b;
+  }
+
+  .sub{
+    margin-top:2rem;
+    color:var(--muted);
+    font-size:.98rem;
+    line-height:1.9;
+    font-weight:300;
+  }
+
+  .btn{
+    margin-top:2.8rem;
+    display:inline-flex;
+    align-items:center;
+    gap:.6rem;
+    padding:1rem 2.2rem;
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;
+    background:transparent;
+    color:var(--cream);
+    font-family:'Jost', sans-serif;
+    font-size:.78rem;
+    letter-spacing:.22em;
+    cursor:pointer;
+    transition:background .35s ease, border-color .35s ease, transform .35s ease;
+  }
+  .btn:hover{
+    background:rgba(255,255,255,.06);
+    border-color:rgba(255,255,255,.45);
+    transform:translateY(-1px);
+  }
+  .btn:active{ transform:translateY(0); }
+
+  /* ================= PAGE 2 ================= */
+  #page2{
+    z-index:1;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 1.4s ease;
+  }
+  #page2.active{ opacity:1; pointer-events:auto; z-index:3; }
+
+  #page2 .inner{ max-width:620px; position:relative; z-index:1; }
+
+  .letter-label{
+    font-size:.7rem;
+    letter-spacing:.3em;
+    background:linear-gradient(100deg, var(--gold), var(--peach));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin-bottom:1.6rem;
+    font-weight:500;
+  }
+
+  .to{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:clamp(2.1rem, 6vw, 3rem);
+    background:linear-gradient(100deg, var(--rose) 0%, var(--lavender) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin-bottom:1.4rem;
+  }
+
+  .message{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size:clamp(1.15rem, 3vw, 1.5rem);
+    line-height:1.85;
+    color:var(--cream);
+    white-space:pre-line;
+  }
+
+  .signature{
+    margin-top:2.2rem;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:1.4rem;
+    background:linear-gradient(100deg, var(--gold), var(--mint));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .divider{
+    width:44px; height:1px;
+    margin:1.6rem auto;
+    background:linear-gradient(90deg, var(--rose), var(--gold), var(--lavender));
+  }
+
+  /* sound toggle */
+  .sound-toggle{
+    position:fixed;
+    top:22px; right:22px;
+    z-index:10;
+    width:44px; height:44px;
+    border-radius:50%;
+    background:linear-gradient(var(--bg-deep), var(--bg-deep)) padding-box,
+               linear-gradient(120deg, var(--rose), var(--lavender)) border-box;
+    border:1px solid transparent;
+    color:var(--cream);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    opacity:0;
+    transition:opacity .8s ease;
+  }
+  .sound-toggle.show{ opacity:1; }
+  .sound-toggle svg{ width:18px; height:18px; }
+
+  /* ---------- petals ---------- */
+  #petals{
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index:2;
+    overflow:hidden;
+  }
+  .petal{
+    position:absolute;
+    top:-8%;
+    width:14px; height:18px;
+    border-radius:0 60% 0 60%;
+    opacity:.85;
+    animation-name:fall, sway;
+    animation-timing-function:linear, ease-in-out;
+    animation-iteration-count:infinite, infinite;
+  }
+  @keyframes fall{
+    to{ transform:translateY(115vh) rotate(360deg); }
+  }
+  @keyframes sway{
+    0%,100%{ margin-left:0; }
+    50%{ margin-left:40px; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .petal{ animation:none; display:none; }
+    .aurora span{ animation:none; }
+    #page1, #page2{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="aurora"><span></span><span></span><span></span></div>
+<div class="grain"></div>
+<div id="petals"></div>
+
+<button class="sound-toggle" id="soundToggle" aria-label="Toggle music">
+  <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M11 5 6 9H3v6h3l5 4V5Z"/>
+    <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+    <path d="M18 6a9 9 0 0 1 0 12" />
+  </svg>
+</button>
+
+<section id="page1" class="screen">
+  <div class="inner">
+    <div class="eyebrow">A LITTLE SOMETHING FOR YOU</div>
+    <h1 class="headline">Made with love<span class="by">by Gboyega <span class="heart">&#10084;</span></span></h1>
+    <p class="sub">There is something I want you to see.<br>Take a moment. This is just for you.</p>
+    <button class="btn" id="openBtn">OPEN YOUR SURPRISE</button>
+  </div>
+</section>
+
+<section id="page2" class="screen">
+  <div class="inner">
+    <div class="letter-label">HAPPY BIRTHDAY</div>
+    <div class="to">Dear Constance,</div>
+    <p class="message">Another year has come around, and somehow you only get more you — warmer, brighter, more impossible not to love.
+
+I hope today feels the way you make everyone around you feel: seen, celebrated, and completely adored.
+
+May this new year bring you soft mornings, easy laughter, and every good thing you've been quietly hoping for.
+
+Thank you for being exactly who you are.</p>
+    <div class="divider"></div>
+    <div class="signature">With all my love, Gboyega</div>
+  </div>
+</section>
+
+<script>
+(function(){
+  // ---------- colorful petals ----------
+  const petalContainer = document.getElementById('petals');
+  const PETAL_COUNT = 22;
+  const colors = [
+    ['#f28aa0','#fbc7d1'], // rose
+    ['#f6b785','#fde0bd'], // peach
+    ['#c9a6f0','#e6d4fb'], // lavender
+    ['#f0c96b','#fbe6ad'], // gold
+    ['#8fd6c4','#c9f0e6']  // mint
+  ];
+  for(let i=0;i<PETAL_COUNT;i++){
+    const p = document.createElement('div');
+    p.className = 'petal';
+    const left = Math.random()*100;
+    const fallDur = 9 + Math.random()*8;
+    const swayDur = 3 + Math.random()*3;
+    const delay = Math.random()*-15;
+    const size = 10 + Math.random()*10;
+    const [c1,c2] = colors[Math.floor(Math.random()*colors.length)];
+    p.style.left = left + 'vw';
+    p.style.width = size + 'px';
+    p.style.height = (size*1.3) + 'px';
+    p.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 60%, transparent 100%)`;
+    p.style.animationDuration = fallDur + 's, ' + swayDur + 's';
+    p.style.animationDelay = delay + 's, ' + delay + 's';
+    p.style.opacity = (0.5 + Math.random()*0.4).toFixed(2);
+    petalContainer.appendChild(p);
+  }
+
+  // ---------- page transition ----------
+  const page1 = document.getElementById('page1');
+  const page2 = document.getElementById('page2');
+  const openBtn = document.getElementById('openBtn');
+  const soundToggle = document.getElementById('soundToggle');
+
+  let musicStarted = false;
+  let musicPlaying = false;
+  let pad, melody, loop;
+
+  function buildMusic(){
+    const reverb = new Tone.Reverb({ decay:6, wet:.45 }).toDestination();
+    const filter = new Tone.Filter(1400, 'lowpass').connect(reverb);
+
+    pad = new Tone.PolySynth(Tone.Synth, {
+      oscillator:{ type:'sine' },
+      envelope:{ attack:1.8, decay:1, sustain:.7, release:4 },
+      volume:-16
+    }).connect(filter);
+
+    melody = new Tone.Synth({
+      oscillator:{ type:'triangle' },
+      envelope:{ attack:.4, decay:.6, sustain:.3, release:2 },
+      volume:-20
+    }).connect(filter);
+
+    const chords = [
+      ['C4','E4','G4','B4'],
+      ['A3','C4','E4','G4'],
+      ['F3','A3','C4','E4'],
+      ['G3','B3','D4','F4']
+    ];
+    const notes = ['E5','G5','C6','B5','A5','G5','E5','D5'];
+
+    let chordIdx = 0, noteIdx = 0;
+
+    loop = new Tone.Loop((time)=>{
+      pad.triggerAttackRelease(chords[chordIdx % chords.length], '2m', time);
+      chordIdx++;
+    }, '2m');
+
+    const noteLoop = new Tone.Loop((time)=>{
+      if(Math.random() > .35){
+        melody.triggerAttackRelease(notes[noteIdx % notes.length], '4n', time);
+      }
+      noteIdx++;
+    }, '1m');
+
+    Tone.Transport.bpm.value = 62;
+    loop.start(0);
+    noteLoop.start('1m');
+  }
+
+  async function startMusic(){
+    if(musicStarted) return;
+    musicStarted = true;
+    await Tone.start();
+    buildMusic();
+    Tone.Transport.start();
+    musicPlaying = true;
+    soundToggle.classList.add('show');
+    updateIcon();
+  }
+
+  function toggleMusic(){
+    if(!musicStarted) return;
+    if(musicPlaying){
+      Tone.Transport.pause();
+      musicPlaying = false;
+    } else {
+      Tone.Transport.start();
+      musicPlaying = true;
+    }
+    updateIcon();
+  }
+
+  function updateIcon(){
+    const icon = document.getElementById('soundIcon');
+    icon.style.opacity = musicPlaying ? '1' : '.4';
+  }
+
+  openBtn.addEventListener('click', ()=>{
+    startMusic();
+    page1.style.opacity = '0';
+    page1.style.filter = 'blur(6px)';
+    setTimeout(()=>{ page1.style.pointerEvents = 'none'; }, 600);
+    page2.classList.add('active');
+  });
+
+  soundToggle.addEventListener('click', toggleMusic);
+})();
+</script>
+
+</body>
+</html>
