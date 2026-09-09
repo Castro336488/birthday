@@ -42,7 +42,6 @@
   }
   .screen .inner{ margin:auto; padding:3vh 0; }
 
-  /* ---------- aurora background blobs ---------- */
   .aurora{
     position:fixed; inset:-10%;
     z-index:0;
@@ -87,7 +86,6 @@
     z-index:5;
   }
 
-  /* ================= PAGE 1 ================= */
   #page1{
     z-index:2;
     background:radial-gradient(ellipse at 50% 30%, #100a12 0%, #050308 65%);
@@ -172,7 +170,28 @@
     box-shadow:0 0 24px rgba(242,138,160,.25);
   }
 
-  /* ================= PAGE 2 & 3 (letter pages) ================= */
+  .nav-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:2.6rem;
+    gap:1rem;
+  }
+  .nav-row.center{ justify-content:center; }
+
+  .btn-ghost{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-family:'Jost', sans-serif;
+    font-size:.72rem;
+    letter-spacing:.18em;
+    cursor:pointer;
+    padding:.6rem .2rem;
+    transition:color .3s ease;
+  }
+  .btn-ghost:hover{ color:var(--cream); }
+
   .letter-page{
     z-index:1;
     opacity:0;
@@ -239,7 +258,6 @@
     font-size:2.6rem;
   }
 
-  /* sound toggle */
   .sound-toggle{
     position:fixed;
     top:22px; right:22px;
@@ -258,7 +276,6 @@
   .sound-toggle.show{ opacity:1; }
   .sound-toggle svg{ width:18px; height:18px; }
 
-  /* ---------- flowers ---------- */
   #petals{
     position:fixed; inset:0;
     pointer-events:none;
@@ -326,7 +343,8 @@ I hope today feels the way you make everyone around you feel: seen, celebrated, 
 May this new year bring you soft mornings, easy laughter, and every good thing you've been quietly hoping for.
 
 Thank you for being exactly who you are.</p>
-    <div style="text-align:center;">
+    <div class="nav-row">
+      <button class="btn-ghost" id="backTo1">&#8592; BACK</button>
       <button class="btn-glow" id="continueBtn">KEEP READING &#8594;</button>
     </div>
   </div>
@@ -345,12 +363,14 @@ So today, let yourself be celebrated. Let yourself be spoiled a little. You've e
     <div class="divider"></div>
     <div class="signature">With all my love, Gboyega</div>
     <div class="final-heart">&#127801;</div>
+    <div class="nav-row center">
+      <button class="btn-ghost" id="backTo2">&#8592; BACK</button>
+    </div>
   </div>
 </section>
 
 <script>
 (function(){
-  // ---------- flowers ----------
   const petalContainer = document.getElementById('petals');
   const PETAL_COUNT = 20;
   const flowers = ['\uD83C\uDF38','\uD83C\uDF3A','\uD83C\uDF37','\uD83C\uDF3C','\uD83D\uDCAE'];
@@ -371,12 +391,13 @@ So today, let yourself be celebrated. Let yourself be spoiled a little. You've e
     petalContainer.appendChild(p);
   }
 
-  // ---------- navigation ----------
   const page1 = document.getElementById('page1');
   const page2 = document.getElementById('page2');
   const page3 = document.getElementById('page3');
   const openBtn = document.getElementById('openBtn');
   const continueBtn = document.getElementById('continueBtn');
+  const backTo1 = document.getElementById('backTo1');
+  const backTo2 = document.getElementById('backTo2');
   const soundToggle = document.getElementById('soundToggle');
   const bgMusic = document.getElementById('bgMusic');
 
@@ -419,6 +440,20 @@ So today, let yourself be celebrated. Let yourself be spoiled a little. You've e
   continueBtn.addEventListener('click', ()=>{
     page2.classList.remove('active');
     page3.classList.add('active');
+    window.scrollTo(0,0);
+  });
+
+  backTo1.addEventListener('click', ()=>{
+    page2.classList.remove('active');
+    page1.style.opacity = '1';
+    page1.style.filter = 'none';
+    page1.style.pointerEvents = 'auto';
+    window.scrollTo(0,0);
+  });
+
+  backTo2.addEventListener('click', ()=>{
+    page3.classList.remove('active');
+    page2.classList.add('active');
     window.scrollTo(0,0);
   });
 
